@@ -96,7 +96,10 @@ module.exports = configure((/* ctx */) => ({
 
   // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
   devServer: {
-    // https: true
+    https: {
+      key: '../../../bi.next.com+5-key.pem',
+      cert: '../../../bi.next.com+5.pem',
+    },
     open: true, // opens browser window automatically
   },
 

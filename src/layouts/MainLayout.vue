@@ -21,7 +21,7 @@
 
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
+      :show-if-above="false"
       bordered
     >
       <q-list>

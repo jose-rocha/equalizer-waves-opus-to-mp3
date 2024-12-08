@@ -182,10 +182,6 @@ function stopAudioRecording() {
             width="640"
             height="100"
           />
-          <span >
-            Gravando áudio
-            <!-- Aqui vai ser adicionado as ondas-->
-          </span>
 
           <q-btn
             v-if="gravando"
@@ -198,7 +194,7 @@ function stopAudioRecording() {
         </template>
 
         <q-btn
-          v-else
+          v-if="!gravando && !audioFinal"
           outline
           round
           color="primary"

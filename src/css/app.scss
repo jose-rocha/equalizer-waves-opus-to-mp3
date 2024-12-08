@@ -1,1 +1,26 @@
 // app global css in SCSS form
+::-webkit-scrollbar {
+    right: 0;
+    border-radius: 5px;
+    background-color: #fff;
+    width: 6px;
+    height: 8px;
+    opacity: 0.75;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: var(--q-primary);
+    width: 6px;
+    height: 8px;
+    opacity: 0.2;
+    cursor: pointer;
+  }
+
+//html {
+//  /* A scrollbar with a gray thumb and a transparent track */
+//  /* Not yet supported in Safari and other WebKit-based iOS browsers */
+//  scrollbar-color: var(--q-primary) transparent;
+//  scrollbar-width: thin;
+//  scroll-behavior: smooth;
+//}

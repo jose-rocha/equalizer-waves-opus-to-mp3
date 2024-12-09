@@ -1,14 +1,16 @@
 <script setup lang="js">
-import { nextTick, ref } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 
 import verificarPermissaoMicrofone from 'src/utils/permissions-mic';
 import { createEchoDelayEffect, visualize, voiceChange } from 'src/utils/waves-mic';
+// import { Platform } from 'quasar';
 
 const gravando = ref(false);
 const audioBlobs = ref([]);
 const mediaRecorder = ref(null);
 const streamBeingCaptured = ref(null);
 const audioFinal = ref(null);
+const audioConvertidoMp3IOS = ref('');
 
 const canvas = ref();
 // const audioCtx = new AudioContext();
@@ -107,16 +109,29 @@ const audioRecorder = {
       // const mimeType = mediaRecorder.value?.mimeType;
 
       mediaRecorder.value?.addEventListener('stop', () => {
-        const audioBlob = new Blob(audioBlobs.value, { type: 'audio/ogg; codecs=opus' });
+        const audioBlob = new Blob(audioBlobs.value, { type: 'audio/ogg' });
         // const audioBlob = new Blob(audioBlobs.value, { type: 'audio/mpeg;' });
         audioFinal.value = URL.createObjectURL(audioBlob);
         // const audio = new Audio(audioFinal.value);
         // audio.play();
         resolve(audioBlob);
+
+        // if (window.Worker) {
+        //   const opustowavWorker = new Worker('/opus2wavjs/opustowavworker.js');
+        //   // Enviando a variável com o link do arquivo ogg para o opustowavWorker
+        //   opustowavWorker.postMessage(audioFinal.value);
+
+        //   opustowavWorker.onmessage = (event) => {
+        //     console.log(event); // recebendo url do audio convertido
+        //     audioConvertidoMp3IOS.value = event.data?.result;
+        //   };
+        // }
       });
 
       mediaRecorder.value?.stop();
+
       this.stopStream();
+
       this.resetRecorderProperties();
     });
   },
@@ -133,10 +148,12 @@ const audioRecorder = {
 function stopAudioRecording() {
   gravando.value = false;
 
-  console.log('Stopping Audio Recording...');
+  // console.log('Stopping Audio Recording...');
   audioRecorder.stop()
     .then((audioAsblob) => {
       console.log('stopped with audio Blob:', audioAsblob);
+
+      // && Platform.is.ios
     })
     .catch((error) => {
       switch (error.name) {
@@ -148,6 +165,19 @@ function stopAudioRecording() {
       }
     });
 }
+
+watch(audioFinal, (newValue) => {
+  if (window.Worker) {
+    const opustowavWorker = new Worker('/opus2wavjs/opustowavworker.js');
+    // Enviando a variável com o link do arquivo ogg para o opustowavWorker
+    opustowavWorker.postMessage(newValue);
+
+    opustowavWorker.onmessage = (event) => {
+      console.log(event); // recebendo url do audio convertido
+      audioConvertidoMp3IOS.value = event.data?.result;
+    };
+  }
+});
 </script>
 
 <template>
@@ -164,7 +194,15 @@ function stopAudioRecording() {
             controls
           >
             Seu navegador não suporta playback de audio.
-          </audio>
+          </audio> Auido OGG {{audioConvertidoMp3IOS}} <br>
+
+          <!-- <audio
+            :src="audioConvertidoMp3IOS"
+            style="height: 55px;"
+            controls
+          >
+            Seu navegador não suporta playback de audio.
+          </audio> -->
 
           <q-btn
             outline

@@ -113,7 +113,7 @@ function visualize(
   } else if (visualSetting === 'frequencybars') {
     analyser.fftSize = 256;
     const bufferLengthAlt = analyser.frequencyBinCount;
-    console.log(bufferLengthAlt);
+    // console.log(bufferLengthAlt);
 
     // See comment above for Float32Array()
     const dataArrayAlt = new Uint8Array(bufferLengthAlt);
@@ -176,7 +176,7 @@ function voiceChange(
 
   // const voiceSetting = voiceSelect.value;
   const voiceSetting = 'distortion';
-  console.log(voiceSetting);
+  // console.log(voiceSetting);
 
   if (echoDelay.isApplied()) {
     echoDelay.discard();

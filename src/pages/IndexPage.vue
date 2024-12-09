@@ -1,9 +1,9 @@
 <script setup lang="js">
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, ref } from 'vue';
+import { Platform } from 'quasar';
 
 import verificarPermissaoMicrofone from 'src/utils/permissions-mic';
 import { createEchoDelayEffect, visualize, voiceChange } from 'src/utils/waves-mic';
-// import { Platform } from 'quasar';
 
 const gravando = ref(false);
 const audioBlobs = ref([]);
@@ -116,22 +116,22 @@ const audioRecorder = {
         // audio.play();
         resolve(audioBlob);
 
-        // if (window.Worker) {
-        //   const opustowavWorker = new Worker('/opus2wavjs/opustowavworker.js');
-        //   // Enviando a variável com o link do arquivo ogg para o opustowavWorker
-        //   opustowavWorker.postMessage(audioFinal.value);
+        if (window.Worker && Platform.is.ios) {
+          const opustowavWorker = new Worker('/opus2wavjs/opustowavworker.js');
 
-        //   opustowavWorker.onmessage = (event) => {
-        //     console.log(event); // recebendo url do audio convertido
-        //     audioConvertidoMp3IOS.value = event.data?.result;
-        //   };
-        // }
+          // Enviando a variável com o link do arquivo ogg para o opustowavWorker
+          opustowavWorker.postMessage(audioFinal.value);
+
+          opustowavWorker.onmessage = (event) => {
+            console.log(event); // recebendo url do audio convertido
+            audioConvertidoMp3IOS.value = event.data?.result;
+          };
+        }
       });
 
       mediaRecorder.value?.stop();
 
       this.stopStream();
-
       this.resetRecorderProperties();
     });
   },
@@ -165,19 +165,6 @@ function stopAudioRecording() {
       }
     });
 }
-
-watch(audioFinal, (newValue) => {
-  if (window.Worker) {
-    const opustowavWorker = new Worker('/opus2wavjs/opustowavworker.js');
-    // Enviando a variável com o link do arquivo ogg para o opustowavWorker
-    opustowavWorker.postMessage(newValue);
-
-    opustowavWorker.onmessage = (event) => {
-      console.log(event); // recebendo url do audio convertido
-      audioConvertidoMp3IOS.value = event.data?.result;
-    };
-  }
-});
 </script>
 
 <template>
